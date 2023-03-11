@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <title>e-konfident</title>
+</head>
+<body onload="generate_list()">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary shadow sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">e-konfident</a>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" onclick="generate_form()">Zgłoś</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Lista zgłoszeń</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white shadow position-absolute" style="width: 380px;" id="submissionList">
+        <a href="/" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+          <svg class="bi me-2" width="30" height="24"></svg>
+          <span class="fs-5 fw-semibold">Lista zgłoszeń</span>
+        </a>
+        <div class="list-group list-group-flush border-bottom scrollarea" id="slDiv">
+        </div>
+      </div>
+
+    <div class="container mr-auto" id="mainDiv">
+        <h1 class="text-center pt-3">Witaj na stronie e-konfident</h1>
+        <p class="text-center">Jeśli chesz złożyć donos na daną osobę wciśnij przycisk <b>zgłoś</b> w prawym górnym rogu.</p>
+        <p class="text-center">Lista złożonych donosów widoczna jest po lewej stronie lub pod przyciskiem <b>lista zgłoszeń</b> w prawym górnym rogu.</p>
+        <p class="text-center">Życzymy miłego korzystania z serwisu i smacznego makowca - administracja e-konfident.pl</p>
+    </div>
+    <!-- <div class="container">
+        <form action="http://127.0.0.1:8000/submissions/" method="POST">
+            <div class="mb-3">
+                <label class="form-label" for="wh1">Kto: </label>
+                <input type="text" class="form-control" name="who" id="wh1">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="wh2">Gdzie: </label>
+                <input type="text" class="form-control" name="where" id="wh2">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="wh3">Co: </label>
+                <input type="text" class="form-control" name="what" id="wh3">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div> -->
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+<script>
+    function list_element_info(element_id){
+        const url = `http://127.0.0.1:8000/submissions/${element_id}`;
+        let md = document.getElementById("mainDiv");
+        fetch(url)
+        .then((response) => {
+                console.log(response);
+                //--> [object Response]
+                console.log(response.body);
+                //--> [object ReadableStream]
+
+                return response.json();
+        })
+        .then(data => {
+            md.innerHTML = "";
+            md.innerHTML = `
+                <h1 class="text-center pt-3">Zgłoszenie nr.${data.id}</h1>
+                <div class="container ml-5">
+                    <p class="text-center">Miejsce: ${data.where}</p>
+                    <p class="text-center">Zgłoszony/a: ${data.who}</p>
+                    <p class="text-center">Powód zgłoszenia: ${data.what}</p>
+                </div>
+            `
+        })
+    }
+
+    function generate_list(){
+        const url = "http://127.0.0.1:8000/submissions/";
+        sl = document.getElementById("slDiv");
+        fetch(url)
+        .then((response) => {
+                console.log(response);
+                //--> [object Response]
+                console.log(response.body);
+                //--> [object ReadableStream]
+
+                return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            console.log(data.submission[0].date);
+            for(let i in data.submission){
+                var j = data.submission[i];
+                var jDate = j.date.split('T')[0]
+                sl.innerHTML += `
+                <a href="#" class="list-group-item list-group-item-action active py-3 lh-tight" aria-current="true" onclick="list_element_info(${j.id})">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                    <strong class="mb-1">${j.where}</strong>
+                    <small>${jDate}</small>
+                    </div>
+                    <div class="col-10 mb-1 small">${j.who}</div>
+                </a>
+                `
+            }
+        })
+       
+    }
+
+    function generate_main(){
+        document.getElementById("mainDiv").remove();
+        document.body.innerHTML += `
+        <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white shadow position-absolute" style="width: 380px;" id="submissionList">
+        <a href="/" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+          <svg class="bi me-2" width="30" height="24"></svg>
+          <span class="fs-5 fw-semibold">Lista zgłoszeń</span>
+        </a>
+        <div class="list-group list-group-flush border-bottom scrollarea">
+          <a href="#" class="list-group-item list-group-item-action active py-3 lh-tight" aria-current="true">
+            <div class="d-flex w-100 align-items-center justify-content-between">
+              <strong class="mb-1">List group item heading</strong>
+              <small>Wed</small>
+            </div>
+            <div class="col-10 mb-1 small">Some placeholder content in a paragraph below the heading and date.</div>
+          </a>
+          
+        </div>
+      </div>
+
+        <div class="container mr-auto" id="mainDiv">
+            <h1 class="text-center pt-3">Witaj na stronie e-konfident</h1>
+            <p class="text-center">Jeśli chesz złożyć donos na daną osobę wciśnij przycisk <b>zgłoś</b> w prawym górnym rogu.</p>
+            <p class="text-center">Lista złożonych donosów widoczna jest po lewej stronie lub pod przyciskiem <b>lista zgłoszeń</b> w prawym górnym rogu.</p>
+            <p class="text-center">Życzymy miłego korzystania z serwisu i smacznego makowca - administracja e-konfident.pl</p>
+        </div>`
+
+    }
+
+    function generate_form(){
+        md = document.getElementById("mainDiv");
+        sl = document.getElementById("submissionList");
+        sl.remove();
+        md.innerHTML = "";
+        md.innerHTML = `
+        <div class="container pt-3">
+            <form>
+                <div class="mb-3">
+                    <label class="form-label" for="wh1">Kto: </label>
+                    <input type="text" class="form-control" name="who" id="wh1">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="wh2">Gdzie: </label>
+                    <input type="text" class="form-control" name="where" id="wh2">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="wh3">Co: </label>
+                    <input type="text" class="form-control" name="what" id="wh3">
+                </div>
+            </form>
+            <button class="btn btn-primary" onclick="add_submission()">Submit</button>
+        </div>`
+    }
+
+    function add_submission(){
+        const url = "http://127.0.0.1:8000/submissions/";
+        let who = document.getElementById("wh1").value;
+        let where = document.getElementById("wh2").value;
+        let what = document.getElementById("wh3").value;
+        const data = {"who": who, "where": where, "what": what};
+        console.log(data);
+        if(who !== "" && where !== "" && what !== ""){
+            fetch(
+                url,
+                {
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                    method: "POST"
+                }
+            )
+            .then(data => data.json())
+            .then((json) => {
+                alert("Przesłano zgłoszenie");
+                window.location.replace("index.html")
+            });
+        }
+    }
+</script>
+</html>
