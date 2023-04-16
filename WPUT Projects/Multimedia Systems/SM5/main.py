@@ -3,7 +3,7 @@ from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import sounddevice as sd
 import soundfile as sf
-import scipy
+import scipy.fftpack
 
 
 def plot_audio(signal, fs, time_margin=[0,0.02]):
@@ -50,14 +50,17 @@ def decimate(signal, n, fs):
 
 
 def interpolate(y, N, N1, nonlin = False):
-    x = np.linspace(0,N,N)
-    x1 = np.linspace(0,N,N1)
+    # x = np.linspace(0,N,N)
+    # x1 = np.linspace(0,N,N1)
+    time = y.shape[0] / N
+    x = np.arange(0, time, 1 / N)
+    x1 = np.arange(0, time, 1 / N1)
     if nonlin:
-        metode_nonlin = interp1d(x,y, kind='cubic')
+        metode_nonlin = interp1d(x,y, kind='cubic', fill_value="extrapolate")
         y_nonlin = metode_nonlin(x1).astype(y.dtype)
         return y_nonlin, x1
     else:
-        metode_lin = interp1d(x,y)
+        metode_lin = interp1d(x,y, fill_value="extrapolate")
         y_lin = metode_lin(x1).astype(y.dtype)
         return y_lin, x1
 
@@ -83,22 +86,35 @@ test_float32 = np.linspace(-1,1,10000)
 # print(decimate_int8)
 # print(fs_int8)
 
-data, fs = sf.read('SM_Lab05/sin_combined.wav', dtype=np.int32)
+data, fs = sf.read('SM_Lab05/sing_high1.wav', dtype=np.int32)
+sd.play(data, fs)
+stats = sd.wait()
 # kwant_data = Kwant(data, 4)
 # plot_audio(data, fs)
 
-for i in (4,8,16,24):
-    kwant_data = Kwant(data, i)
+# for i in (4,8,16,24):
+#     kwant_data = Kwant(data, i)
+#     sd.play(kwant_data, fs)
+#     sd.wait()
     #plot_audio(data, fs, [0,0.0005])
-    plot_audio(kwant_data, fs, [0,0.0005])
+    # plot_audio(kwant_data, fs, [0,0.0005])
 
-# for i in (4, 2, 1):
+# for i in (16, 8, 4, 2, 1):
 #     dec_data, dec_fs = decimate(data,i,fs)
-#     plot_audio(dec_data, dec_fs)
+#     print(dec_data)
+#     print(dec_fs)
+#     sd.play(dec_data, dec_fs)
+#     sd.wait()
+    # plot_audio(dec_data, dec_fs)
 
-# for i in (2000, 4000, 8000, 16000, 24000, 41000, 16950):
-#     interp_data, interp_fsx = interpolate(data, fs, i)
-#     plot_audio(interp_data, i, [0, 0.01])
+for i in (2000, 4000, 8000, 16000, 24000, 41000, 16950):
+    interp_data, interp_fsx = interpolate(data, fs, i, True)
+    #plot_audio(interp_data, i, [0, 0.01])
+    print(interp_data)
+    print(interp_fsx)
+    sd.play(interp_data, i)
+    sd.wait()
+    #plot_audio(interp_data, i, [0, 0.01])
 
 # dec_data, dec_fs = decimate(data, 5, fs)
 # plt.plot(np.arange(0,data.shape[0])/fs, data)
