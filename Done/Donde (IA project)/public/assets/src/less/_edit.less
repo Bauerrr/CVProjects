@@ -1,0 +1,44 @@
+.edit {
+  .edit-form {
+    margin-bottom: 1em;
+    margin-left: 20px;
+    .form-group {
+      margin-bottom: 1em;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      @media (min-width: @mobileBreakpoint) {
+        flex-direction: row;
+      }
+
+      label {
+        display: inline-block;
+        flex-grow: 1;
+      }
+
+      input[type="text"] {
+        flex-grow: 3;
+      }
+
+      textarea {
+        height: 300px;
+        flex-grow: 3;
+      }
+    }
+  }
+
+  h1{
+    margin-left: 20px;
+  }
+  .action-list{
+    a{
+      margin-left: 20px;
+      font-weight: 600;
+      font-size: 17px;
+    }
+
+    a:hover{
+      color: #006AFF;
+    }
+  }
+}

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import sounddevice as sd
 import soundfile as sf
 import scipy
+from scipy.stats.mstats import gmean
 
 
 def Kwant(data, bit):
@@ -90,17 +91,53 @@ def DPCM_predict_compress(x,bit,predictor,n):
         e=predictor(xp[idx])
     return y
 
+
+def DPCM_predict_decompress(y, predictor, n):
+    x = np.zeros(y.shape)
+    x0 = 0
+    for i in range(y.shape[0]):
+        x[i] = y[i] + x0
+        idx = (np.arange(i - n, i, 1, dtype=int) + 1)
+        idx = np.delete(idx, idx < 0)
+        x0 = predictor(x[idx])
+    return x
+
+
 x = np.linspace(-1,1,1000)
-y = 0.9*np.sin(np.pi*x*4)
-y1 = DPCM_compress(y, 3)
+#y = 0.9*np.sin(np.pi*x*4)
+data, fs = sf.read('SM_Lab05/sing_medium1.wav')
+#y1 = DPCM_predict_compress(data, 8, np.mean, 3)
 #y1 = Kwant(y1,8)
-y2 = DPCM_decompress(y1)
+#y2 = DPCM_predict_decompress(y1, np.mean, 3)
 
 
-plt.subplot(2,1,1)
-plt.plot(x,y1)
+# plt.subplot(2,1,1)
+# plt.plot(fs,y1)
+#
+# plt.subplot(2,1,2)
+# plt.plot(fs,y2)
+# plt.show()
 
-plt.subplot(2,1,2)
-plt.plot(x,y2)
-plt.show()
+#testy A_law i mu_law
+y1 = A_law_compress(data)
+y1 = Kwant(y1,1)
+y2 = A_law_decompress(y1)
 
+# plt.subplot(2,1,1)
+# plt.plot(fs,y1)
+#
+# plt.subplot(2,1,2)
+# plt.plot(fs,y2)
+# plt.show()
+
+# sd.play(data, fs)
+# stats = sd.wait()
+
+#testy DPCM
+# y1 = DPCM_compress(data, 8)
+# y2 = DPCM_decompress(y1)
+# y1 = DPCM_predict_compress(data, 8, np.mean, 3)
+# y2 = DPCM_predict_decompress(y1, np.mean, 3)
+
+sd.play(y2, fs)
+stats = sd.wait()
