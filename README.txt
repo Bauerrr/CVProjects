@@ -1,23 +1,18 @@
 CVProjects
 Repository contains projects that I list in my cv.
 
-Algorithms - in progress
-	Python package containing simple data algorithms written in Python OOP.
-
-Django
-	Folder with Django applications.
-
-Django/Feddit - in progress
-	Reddit-ish app focused on recipes.
 
 REST APIs
 	Folder with applications that use REST API as source for sending or receiving data.
 
-REST APIs/e-konfident - done
+REST APIs/e-konfident (Django, Bootstrap, JS)
 	App that lets you tattle on somebody.
 
 WPUT Projects
 	Folder with some of the projects from my college.
 
-WPUT Projects/Multimedia Systems
-	Folder with apps developed for Multimedia Systems laboratory classes.
+WPUT Projects/Multimedia Systems (Python, NumPy, Matplotlib)
+	Folder with scripts developed for Multimedia Systems laboratory classes.
+
+Donde (JS, PHP, CSS, Laragon, Less)
+	Internet Applications laboratory group project. App that lets you check where given IT department employee is located.
