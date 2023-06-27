@@ -13,7 +13,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 #q swipe w lewo
 #w swipe w prawo
 options = Options()
-options.add_argument("user-data-dir=C:\\Users\\Grzegorz Bauer\\AppData\\Local\\Google\\Chrome\\User Data")
+options.add_argument("user-data-dir=")
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH, chrome_options=options)
 driver.get("https://tinder.com/app/recs")
